@@ -16,6 +16,7 @@ public class OrderInfoImpl implements OrderInfo {
 		order.setShippingAddress("Gurgaon");
 		list.add(0, order);
 
+		order = new Order();
 		order.setOrderId(2);
 		order.setItemName("Shampoo");
 		order.setQuantity(50);
@@ -26,7 +27,7 @@ public class OrderInfoImpl implements OrderInfo {
 
 	@Override
 	public Order getOrder(int orderId) {
-		System.out.println("Inside the GetOrder...");
+		System.out.println("Inside the GetOrder..." );
 		if (list.get(0).getOrderId() == orderId) {
 			return list.get(0);
 		} else if (list.get(1).getOrderId() == orderId) {
