@@ -12,6 +12,7 @@
 # Generated files
 bin/
 gen/
+webservice/yogurtstore/target/
 
 # Gradle files
 .gradle/
