@@ -5,7 +5,7 @@
   <display-name>YogurtStore</display-name>
   <context-param>
    <param-name>contextConfigLocation</param-name>
-   <param-value>classpath:com/example/rest/cxf.xml</param-value>
+   <param-value>classpath:cxf.xml</param-value>
   </context-param>
   <listener>
    <listener-class>
