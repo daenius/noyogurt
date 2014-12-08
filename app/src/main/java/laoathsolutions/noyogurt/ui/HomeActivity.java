@@ -16,7 +16,7 @@ public class HomeActivity extends Activity {
         setContentView(R.layout.activity_home);
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new GroupFragment())
+                    .add(R.id.container, new JoinFragment())
                     .commit();
         }
     }

@@ -14,12 +14,13 @@
 	<jaxrs:server address="/" id="connectionService">
 		<jaxrs:serviceBeans>
 			<ref bean="order"/>
+			<ref bean="api"/>
 		</jaxrs:serviceBeans>
 		<jaxrs:extensionMappings>
 			<entry key="xml" value="application/xml">
 			</entry>
 		</jaxrs:extensionMappings>
 	</jaxrs:server>
-	<bean class="com.example.rest.OrderInfoImpl" id="order">
-	</bean>
+	<bean class="com.example.rest.OrderInfoImpl" id="order"/>
+	<bean class="com.laoathsolutions.yogurtstore.api.GroupApiImpl" id="api"/>
 </beans>

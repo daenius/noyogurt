@@ -1,13 +1,17 @@
 package laoathsolutions.noyogurt.ui;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.HashMap;
 
@@ -23,6 +27,9 @@ import laoathsolutions.noyogurt.api.User;
 public class GroupFragment extends ListFragment {
 
 
+    private ImageView mBigPlate;
+    private LegendView mLegendView;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -36,14 +43,7 @@ public class GroupFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ContentApi api = ContentApiFactory.getApi();
-        mGroupInfo = api.getActiveGroupInfo();
-        mUserPositionMap = new HashMap<String, Integer>(mGroupInfo.getSize());
-        int position = 0;
-        for(User user : mGroupInfo.getUsers()) {
-            mUserPositionMap.put(user.getId(), position++);
-        }
-        setListAdapter(new TransactionAdapter(getActivity().getBaseContext(), mGroupInfo.getTransactions(), mUserPositionMap));
+        new GroupInfoAsyncTask().execute(ContentApiFactory.getApi().getActiveGroupId());
     }
 
     @Override
@@ -53,14 +53,10 @@ public class GroupFragment extends ListFragment {
         lv.setStackFromBottom(true);
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View item = inflater.inflate(R.layout.current_meal, null);
-        ImageView bigPlate = ((ImageView) item.findViewById(R.id.big_plate));
-        if(bigPlate != null ) {
-            bigPlate.setImageResource(getBigPlateForGroup());
-        }
+        mBigPlate = ((ImageView) item.findViewById(R.id.big_plate));
         lv.addFooterView(item);
-        LegendView legendView = new LegendView(getActivity());
-        legendView.setUsers(mGroupInfo.getUsers());
-        lv.addFooterView(legendView);
+        mLegendView = new LegendView(getActivity());
+        lv.addFooterView(mLegendView);
     }
 
     @Override
@@ -78,5 +74,37 @@ public class GroupFragment extends ListFragment {
             }
         }
         return PlateImageHelper.getBigPlateImageForUserAt(mUserPositionMap.get(minUser));
+    }
+
+    private void loadList(GroupInfo groupInfo) {
+        mGroupInfo = groupInfo;
+        mUserPositionMap = new HashMap<String, Integer>(mGroupInfo.getSize());
+        int position = 0;
+        for(User user : mGroupInfo.getUsers()) {
+            mUserPositionMap.put(user.getId(), position++);
+        }
+        setListAdapter(new TransactionAdapter(getActivity().getBaseContext(), mGroupInfo.getTransactions(), mUserPositionMap));
+        if(mBigPlate != null ) {
+            mBigPlate.setImageResource(getBigPlateForGroup());
+        }
+        mLegendView.setUsers(mGroupInfo.getUsers());
+    }
+
+    private class GroupInfoAsyncTask extends AsyncTask<String, String, GroupInfo> {
+
+        @Override
+        protected GroupInfo doInBackground(String... strings) {
+            return ContentApiFactory.getApi().getGroupInfo(strings[0]);
+        }
+
+        @Override
+        protected void onPostExecute(GroupInfo groupInfo) {
+            super.onPostExecute(groupInfo);
+            if(groupInfo == null) {
+                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+            } else {
+                loadList(groupInfo);
+            }
+        }
     }
 }

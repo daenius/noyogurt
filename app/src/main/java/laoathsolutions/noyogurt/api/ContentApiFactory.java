@@ -5,6 +5,6 @@ package laoathsolutions.noyogurt.api;
  */
 public class ContentApiFactory {
     public static ContentApi getApi() {
-        return StubContentApi.getInstance();
+        return RestGetContentApi.getInstance();
     }
 }
